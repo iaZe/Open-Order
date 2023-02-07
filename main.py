@@ -3,7 +3,7 @@ import tkinter
 import customtkinter
 from datetime import date
 
-customtkinter.set_appearance_mode("dark")
+customtkinter.set_appearance_mode("system")
 
 class ScrollableRadiobuttonFrame(customtkinter.CTkScrollableFrame):
     def __init__(self, master, item_list, command=None, **kwargs):
