@@ -1,9 +1,30 @@
-import banco
+import sqlite3
 import tkinter
 import customtkinter
+from sqlite3 import Error
 from datetime import date
 
-customtkinter.set_appearance_mode("system")
+customtkinter.set_appearance_mode("dark")
+
+def create_connection():
+    connection = None
+    try:
+        connection = sqlite3.connect("database.db")
+    except Error as error:
+        print(error)
+    return connection
+
+def select(query):
+    with create_connection() as connection:
+        cursor = connection.cursor()
+        cursor.execute(query)
+        return cursor.fetchall()
+
+def execute(query):
+    with create_connection() as connection:
+        cursor = connection.cursor()
+        cursor.execute(query)
+        connection.commit()
 
 class ScrollableRadiobuttonFrame(customtkinter.CTkScrollableFrame):
     def __init__(self, master, item_list, command=None, **kwargs):
@@ -133,7 +154,7 @@ class OrderRegistration(customtkinter.CTkFrame):
         self.button_voltar.grid(row=7, column=1, padx=10, pady=10)
 
     def getClients(self):
-        clientes = banco.select("SELECT nome FROM clientes")
+        clientes = select("SELECT nome FROM clientes")
         client_list = ','.join([str(cliente[0]) for cliente in clientes]).split(',')
         return client_list
 
@@ -146,9 +167,10 @@ class OrderRegistration(customtkinter.CTkFrame):
         observacao = self.entry_observacao.get()
         status = self.combobox_status.get()
         try:
-            banco.execute("CREATE TABLE IF NOT EXISTS pedidos (id INTEGER PRIMARY KEY AUTOINCREMENT, cliente TEXT, data TEXT, entrega TEXT, pago TEXT, total TEXT, observacao TEXT, status TEXT)")
-            banco.execute(f"INSERT INTO pedidos (cliente, data, entrega, pago, total, observacao, status) VALUES ('{cliente}', '{data}', '{entrega}', '{pago}', '{total}', '{observacao}', '{status}')")
+            execute("CREATE TABLE IF NOT EXISTS pedidos (id INTEGER PRIMARY KEY AUTOINCREMENT, cliente TEXT, data TEXT, entrega TEXT, pago TEXT, total TEXT, observacao TEXT, status TEXT)")
+            execute(f"INSERT INTO pedidos (cliente, data, entrega, pago, total, observacao, status) VALUES ('{cliente}', '{data}', '{entrega}', '{pago}', '{total}', '{observacao}', '{status}')")
             tkinter.messagebox.showinfo("Sucesso", "Pedido cadastrado com sucesso")
+            self.master.back_menu()
         except:
             tkinter.messagebox.showerror("Error", "Erro ao cadastrar pedido")
 
@@ -161,7 +183,7 @@ class OrderList(customtkinter.CTkFrame):
         super().__init__(master, **kwargs)
 
         def getPedidos():
-            pedidos = banco.select("SELECT * FROM pedidos")
+            pedidos = select("SELECT * FROM pedidos")
             for i in pedidos:
                 if i[7] == "Pago":
                     self.tv.insert("", "end", values=i, tag="paid")
@@ -208,7 +230,7 @@ class OrderList(customtkinter.CTkFrame):
         self.button_voltar.grid(row=1, column=0, padx=10, pady=10)
 
     def ipady(self):
-        rows = banco.select("SELECT ID FROM pedidos")
+        rows = select("SELECT ID FROM pedidos")
         if len(rows) < 11:
             self.tv.grid(row=0, column=0, ipady=60, padx=10, pady=10)
         elif len(rows) < 16:
@@ -306,7 +328,7 @@ class OrderEdit(customtkinter.CTkFrame):
         observacao = self.entry_observacao.get()
         status = self.entry_status.get()
         try:
-            banco.execute(f"UPDATE pedidos SET cliente = '{cliente}', data = '{data}', entrega = '{entrega}', pago = '{pago}', total = '{total}', observacao = '{observacao}', status = '{status}' WHERE id = {id}")
+            execute(f"UPDATE pedidos SET cliente = '{cliente}', data = '{data}', entrega = '{entrega}', pago = '{pago}', total = '{total}', observacao = '{observacao}', status = '{status}' WHERE id = {id}")
             tkinter.messagebox.showinfo("Sucesso", "Pedido editado com sucesso")
         except:
             tkinter.messagebox.showerror("Erro", "Não foi possível editar o pedido")
@@ -364,8 +386,8 @@ class ClientRegistration(customtkinter.CTkFrame):
         cidade = self.entry_cidade.get()
         estado = self.entry_estado.get()
         try:
-            banco.execute("CREATE TABLE IF NOT EXISTS clientes (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, telefone TEXT, endereco TEXT, cidade TEXT, estado TEXT)")
-            banco.execute(f"INSERT INTO clientes (nome, telefone, endereco, cidade, estado) VALUES ('{nome}', '{telefone}', '{endereco}', '{cidade}', '{estado}')")
+            execute("CREATE TABLE IF NOT EXISTS clientes (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, telefone TEXT, endereco TEXT, cidade TEXT, estado TEXT)")
+            execute(f"INSERT INTO clientes (nome, telefone, endereco, cidade, estado) VALUES ('{nome}', '{telefone}', '{endereco}', '{cidade}', '{estado}')")
             tkinter.messagebox.showinfo("Sucesso", "Cliente cadastrado com sucesso")
         except:
             tkinter.messagebox.showerror("Erro", "Não foi possível cadastrar o cliente")
@@ -381,7 +403,7 @@ class ClientList(customtkinter.CTkFrame):
         super().__init__(master, **kwargs)
 
         def getCliente():
-            clientes = banco.select("SELECT * FROM clientes")
+            clientes = select("SELECT * FROM clientes")
             for i in clientes:
                 self.tv.insert("", "end", values=i)
 
@@ -478,7 +500,7 @@ class ClientEdit(customtkinter.CTkFrame):
         estado = self.entry_estado.get()
 
         try:
-            banco.execute(f"UPDATE clientes SET nome='{nome}', telefone='{telefone}', endereco='{endereco}', cidade='{cidade}', estado='{estado}' WHERE id={id}")
+            execute(f"UPDATE clientes SET nome='{nome}', telefone='{telefone}', endereco='{endereco}', cidade='{cidade}', estado='{estado}' WHERE id={id}")
             tkinter.messagebox.showinfo("Sucesso", "Cliente editado com sucesso")
             self.master.client_list()
             self.destroy()
