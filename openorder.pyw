@@ -4,8 +4,6 @@ import customtkinter
 from sqlite3 import Error
 from datetime import date
 
-customtkinter.set_appearance_mode("dark")
-
 def create_connection():
     connection = None
     try:
@@ -79,26 +77,101 @@ class Menu(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.label = customtkinter.CTkLabel(self, text="OrderFlow")
-        self.label.grid(row=0, column=0, columnspan=2, pady=10)
+        self.requests = customtkinter.CTkFrame(self)
+        self.requests.grid(row=0, column=0, padx=10, pady=10)
+        self.label_month = customtkinter.CTkLabel(self.requests, text="Pedidos do mês")
+        self.label_month.grid(row=0, column=0, padx=10, pady=10)
+        pedidos = select(f"SELECT COUNT(*) FROM pedidos WHERE data LIKE '%%/{date.today().strftime('%m/%Y')}'")
+        self.label_month_value = customtkinter.CTkLabel(self.requests, text=pedidos[0][0])
+        self.label_month_value.grid(row=1, column=0, padx=10)
+
+        self.invoicing = customtkinter.CTkFrame(self)
+        self.invoicing.grid(row=0, column=1, padx=10, pady=10)
+        self.label_month = customtkinter.CTkLabel(self.invoicing, text="Faturamento")
+        self.label_month.grid(row=0, column=1, padx=10, pady=10)
+        lucro = select(f"SELECT SUM(pago) FROM pedidos WHERE data LIKE '%%/{date.today().strftime('%m/%Y')}'")
+        self.label_month_value = customtkinter.CTkLabel(self.invoicing, text="R$ {}".format(lucro[0][0]))
+        self.label_month_value.grid(row=1, column=1, padx=10)
+
+        self.profit = customtkinter.CTkFrame(self)
+        self.profit.grid(row=0, column=2, padx=10, pady=10)
+        self.label_month = customtkinter.CTkLabel(self.profit, text="Previsão de faturamento")
+        self.label_month.grid(row=0, column=2, padx=10, pady=10)
+        previsao = select(f"SELECT SUM(total) FROM pedidos WHERE data LIKE '%%/{date.today().strftime('%m/%Y')}'")
+        self.label_month_value = customtkinter.CTkLabel(self.profit, text="R$ {}".format(previsao[0][0]))
+        self.label_month_value.grid(row=1, column=2, padx=10)
+
+        self.costs = customtkinter.CTkFrame(self)
+        self.costs.grid(row=0, column=3, padx=10, pady=10)
+        self.label_month = customtkinter.CTkLabel(self.costs, text="Custos")
+        self.label_month.grid(row=0, column=3, padx=10, pady=10)
+        custos = select(f"SELECT SUM(total) FROM pedidos WHERE data LIKE '%%/{date.today().strftime('%m/%Y')}'")
+        self.label_month_value = customtkinter.CTkLabel(self.costs, text="R$ {}".format(custos[0][0]))
+        self.label_month_value.grid(row=1, column=3, padx=10)
+    
+
+
+        def get_daily():
+            pedidos = select("SELECT * FROM pedidos WHERE entrega = '{}'".format(date.today().strftime("%d/%m/%Y")))
+            for i in pedidos:
+                if i[7] == "Pago":
+                    self.tv.insert("", "end", values=i, tag="paid")
+                elif i[7] == "Cancelado":
+                    self.tv.insert("", "end", values=i, tag="canceled")
+                elif i[7] == "Entregue":
+                    self.tv.insert("", "end", values=i, tag="delivered")
+                elif i[7] == "Confirmado":
+                    self.tv.insert("", "end", values=i, tag="confirmed")
+                else:
+                    self.tv.insert("", "end", values=i)
+
+                self.tv.tag_configure("paid", background="#90EE90")
+                self.tv.tag_configure("canceled", background="#FFA07A")
+                self.tv.tag_configure("delivered", background="#87CEFA")
+                self.tv.tag_configure("confirmed", background="#FFFFE0")
+
+        self.CTkFrame = customtkinter.CTkFrame(self)
+        self.CTkFrame.grid(row=1, column=0, columnspan=4, padx=10, pady=10)
+
+        self.label = customtkinter.CTkLabel(self.CTkFrame, text="Pedidos para hoje")
+        self.label.grid(row=0, column=0, pady=10)
+        self.tv=tkinter.ttk.Treeview(self.CTkFrame, columns=(1,2,3,4,5,6,7,8), show="headings", height="5")
+        self.tv.column(1, width=50, anchor='c')
+        self.tv.column(2, width=100, anchor='c')
+        self.tv.column(3, width=100, anchor='c')
+        self.tv.column(4, width=100, anchor='c')
+        self.tv.column(5, width=100, anchor='c')
+        self.tv.column(6, width=100, anchor='c')
+        self.tv.column(7, width=100, anchor='c')
+        self.tv.column(8, width=100, anchor='c')
+        self.tv.heading(1, text="ID")
+        self.tv.heading(2, text="Cliente")
+        self.tv.heading(3, text="Data")
+        self.tv.heading(4, text="Entrega")
+        self.tv.heading(5, text="Pago")
+        self.tv.heading(6, text="Total")
+        self.tv.heading(7, text="Observação")
+        self.tv.heading(8, text="Status")
+        get_daily()
+        self.tv.grid(row=1, column=0, padx=10, pady=10)
 
         self.button_cadastrar_pedido = customtkinter.CTkButton(self, text="Cadastrar pedido", command=self.master.order_registration)
-        self.button_cadastrar_pedido.grid(row=1, column=0, padx=10, pady=10)
+        self.button_cadastrar_pedido.grid(row=4, column=0, padx=10, pady=10)
 
         self.button_listar_pedidos = customtkinter.CTkButton(self, text="Listar pedidos", command=self.master.order_list)
-        self.button_listar_pedidos.grid(row=2, column=0, padx=10, pady=10)
+        self.button_listar_pedidos.grid(row=4, column=1, padx=10, pady=10)
 
         self.button_cadastrar_cliente = customtkinter.CTkButton(self, text="Cadastrar cliente", command=self.master.client_registration)
-        self.button_cadastrar_cliente.grid(row=1, column=1, padx=10, pady=10)
+        self.button_cadastrar_cliente.grid(row=4, column=2, padx=10, pady=10)
 
         self.button_listar_clientes = customtkinter.CTkButton(self, text="Listar clientes", command=self.master.client_list)
-        self.button_listar_clientes.grid(row=2, column=1, padx=10, pady=10)
+        self.button_listar_clientes.grid(row=4, column=3, padx=10, pady=10)
 
         self.button_contabilidade = customtkinter.CTkButton(self, text="Contabilidade")
-        self.button_contabilidade.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+        self.button_contabilidade.grid(row=5, column=1, columnspan=2, padx=10, pady=10)
 
         self.button_sair = customtkinter.CTkButton(self, text="Sair", command=quit)
-        self.button_sair.grid(row=4, column=0, columnspan=2, padx=10, pady=10)
+        self.button_sair.grid(row=6, column=1, columnspan=2, padx=10, pady=10)
 
 class OrderRegistration(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -162,15 +235,18 @@ class OrderRegistration(customtkinter.CTkFrame):
         cliente = self.scrollable_checkbox_frame.get_checked_item()
         data = self.entry_data.get()
         entrega = self.entry_entrega.get()
-        pago = self.entry_pago.get()
-        total = self.entry_total.get()
+        pago = self.entry_pago.get().replace("R$", "").strip()
+        pago = float(pago.replace(",", "."))
+        total = self.entry_total.get().replace("R$", "").strip()
+        total = float(total.replace(",", "."))
         observacao = self.entry_observacao.get()
         status = self.combobox_status.get()
         try:
-            execute("CREATE TABLE IF NOT EXISTS pedidos (id INTEGER PRIMARY KEY AUTOINCREMENT, cliente TEXT, data TEXT, entrega TEXT, pago TEXT, total TEXT, observacao TEXT, status TEXT)")
+            execute("CREATE TABLE IF NOT EXISTS pedidos (id INTEGER PRIMARY KEY AUTOINCREMENT, cliente TEXT, data TEXT, entrega TEXT, pago FLOAT, total FLOAT, observacao TEXT, status TEXT)")
             execute(f"INSERT INTO pedidos (cliente, data, entrega, pago, total, observacao, status) VALUES ('{cliente}', '{data}', '{entrega}', '{pago}', '{total}', '{observacao}', '{status}')")
             tkinter.messagebox.showinfo("Sucesso", "Pedido cadastrado com sucesso")
             self.master.back_menu()
+            self.destroy()
         except:
             tkinter.messagebox.showerror("Error", "Erro ao cadastrar pedido")
 
@@ -514,8 +590,10 @@ class ClientEdit(customtkinter.CTkFrame):
 class Aplication(customtkinter.CTk):
     def __init__(self):
         super().__init__()
-        self.title("OrderFlow")
+        self.title("Open-Order")
         self.resizable(False, False)
+
+        customtkinter.set_appearance_mode("dark")
 
         self.login = Login(self)
         self.login.grid(row=0, column=0, padx=10, pady=10)
@@ -533,7 +611,6 @@ class Aplication(customtkinter.CTk):
                 tkinter.messagebox.showerror("Error", "User or password invalid")
         except:
             tkinter.messagebox.showerror("Error", "Invalid user or password")
-        
 
     def back_menu(self):
         self.menu.destroy()
@@ -549,7 +626,7 @@ class Aplication(customtkinter.CTk):
         self.menu.destroy()
         self.listar_pedido = OrderList(self)
         self.listar_pedido.grid(row=0, column=0, padx=10, pady=10)
-    
+
     def client_registration(self):
         self.menu.destroy()
         self.cadastrar_cliente = ClientRegistration(self)
