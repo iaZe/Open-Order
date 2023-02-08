@@ -523,13 +523,17 @@ class Aplication(customtkinter.CTk):
     def login(self):
         user = self.login.entry_user.get()
         password = self.login.entry_password.get()
-
-        if user and password:
-            self.login.destroy()
-            self.menu = Menu(self)
-            self.menu.grid(row=0, column=0, padx=10, pady=10)
-        else: 
-            customtkinter.messagebox.showerror("Error", "User or password is empty")
+        try:
+            result = select(f"SELECT * FROM usuarios WHERE usuario='{user}' AND senha='{password}'")
+            if result != []:
+                self.login.destroy()
+                self.menu = Menu(self)
+                self.menu.grid(row=0, column=0, padx=10, pady=10)
+            else:
+                tkinter.messagebox.showerror("Error", "User or password invalid")
+        except:
+            tkinter.messagebox.showerror("Error", "Invalid user or password")
+        
 
     def back_menu(self):
         self.menu.destroy()
