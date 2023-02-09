@@ -53,4 +53,3 @@ class Updater:
             self.delete_zip()
 
 updater = Updater()
-updater.update()
