@@ -77,6 +77,41 @@ class Menu(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
+        self.master.geometry("970x355")
+
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure((2, 3), weight=0)
+        self.grid_rowconfigure((0, 1, 2), weight=1)
+
+        self.leftbar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
+        self.leftbar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
+        self.leftbar_frame.grid_rowconfigure(4, weight=1)
+
+        self.button_dashboard = customtkinter.CTkButton(self.leftbar_frame, text="Dashboard", command=self.master.dashboard)
+        self.button_dashboard.grid(row=0, column=0, padx=10, pady=10)
+        self.button_register_order = customtkinter.CTkButton(self.leftbar_frame, text="Cadastrar pedido", command=self.master.order_registration)
+        self.button_register_order.grid(row=1, column=0, padx=10, pady=10)
+        self.button_list_orders = customtkinter.CTkButton(self.leftbar_frame, text="Listar pedidos", command=self.master.order_list)
+        self.button_list_orders.grid(row=2, column=0, padx=10, pady=10)
+        self.button_register_client = customtkinter.CTkButton(self.leftbar_frame, text="Cadastrar cliente", command=self.master.client_registration)
+        self.button_register_client.grid(row=3, column=0, padx=10, pady=10)
+        self.button_list_client = customtkinter.CTkButton(self.leftbar_frame, text="Listar clientes", command=self.master.client_list)
+        self.button_list_client.grid(row=4, column=0, padx=10, pady=10)
+        self.button_accounting = customtkinter.CTkButton(self.leftbar_frame, text="Contabilidade")
+        self.button_accounting.grid(row=5, column=0, padx=10, pady=10)
+        self.button_sair = customtkinter.CTkButton(self.leftbar_frame, text="Sair", command=self.master.on_close)
+        self.button_sair.grid(row=6, column=0, padx=10, pady=10)
+
+        self.rightbar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
+        self.rightbar_frame.grid(row=0, column=3, rowspan=4, sticky="nsew")
+        # Função para chamar as classes para o rightbar dependendo da opção escolhida no menu
+        self.dashboard = Dashboard(self.rightbar_frame)
+        self.dashboard.grid(row=0, column=0, sticky="nsew")
+
+class Dashboard(customtkinter.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+
         smallPoppins = customtkinter.CTkFont(family="Poppins", size=14, weight="bold")
         bigPoppins = customtkinter.CTkFont(family="Poppins", size=22, weight="bold")
 
@@ -98,27 +133,6 @@ class Menu(customtkinter.CTkFrame):
                 self.tv.tag_configure("canceled", background="#FFA07A")
                 self.tv.tag_configure("delivered", background="#87CEFA")
                 self.tv.tag_configure("confirmed", background="#FFFFE0")
-
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_columnconfigure((2, 3), weight=0)
-        self.grid_rowconfigure((0, 1, 2), weight=1)
-
-        self.leftbar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
-        self.leftbar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
-        self.leftbar_frame.grid_rowconfigure(4, weight=1)
-        self.button_register_order = customtkinter.CTkButton(self.leftbar_frame, text="Cadastrar pedido", command=self.master.order_registration)
-        self.button_register_order.grid(row=0, column=0, padx=10, pady=10)
-        self.button_list_orders = customtkinter.CTkButton(self.leftbar_frame, text="Listar pedidos", command=self.master.order_list)
-        self.button_list_orders.grid(row=1, column=0, padx=10, pady=10)
-        self.button_register_client = customtkinter.CTkButton(self.leftbar_frame, text="Cadastrar cliente", command=self.master.client_registration)
-        self.button_register_client.grid(row=2, column=0, padx=10, pady=10)
-        self.button_list_client = customtkinter.CTkButton(self.leftbar_frame, text="Listar clientes", command=self.master.client_list)
-        self.button_list_client.grid(row=3, column=0, padx=10, pady=10)
-        self.button_accounting = customtkinter.CTkButton(self.leftbar_frame, text="Contabilidade")
-        self.button_accounting.grid(row=4, column=0, padx=10, pady=10)
-        self.button_sair = customtkinter.CTkButton(self.leftbar_frame, text="Sair", command=self.master.on_close)
-        self.button_sair.grid(row=5, column=0, padx=10, pady=10)
-
 
         self.rightupbar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.rightupbar_frame.grid(row=0, column=1, rowspan=2, sticky="nsew")
@@ -156,7 +170,6 @@ class Menu(customtkinter.CTkFrame):
         self.label_month_value = customtkinter.CTkLabel(self.costs, text="R$ {}".format(custos[0][0]), font=bigPoppins)
         self.label_month_value.grid(row=1, column=0, padx=10)
     
-
         self.rightdownbar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.rightdownbar_frame.grid(row=2, column=1, sticky="nsew")
         self.rightdownbar_frame.grid_rowconfigure(2, weight=1)
@@ -182,60 +195,70 @@ class Menu(customtkinter.CTkFrame):
         self.tv.heading(7, text="Observação")
         self.tv.heading(8, text="Status")
         get_daily()
-        self.tv.grid(row=1, column=0, padx=10, pady=10)
+        self.tv.grid(row=1, column=0, ipady=15, padx=10, pady=10)
 
 class OrderRegistration(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.scrollable_checkbox_frame = ScrollableRadiobuttonFrame(self, width=300, item_list=self.getClients())
-        self.scrollable_checkbox_frame.grid(row=0, column=0, columnspan=2, padx=15, pady=15)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure((2, 3), weight=0)
+        self.grid_rowconfigure((0, 1, 2), weight=1)
 
-        self.label_data = customtkinter.CTkLabel(self, text="Data")
-        self.label_data.grid(row=1, column=0, padx=10, pady=10)
+        self.scrollable_checkbox_frame = ScrollableRadiobuttonFrame(self, height=340, width=300, corner_radius=0, item_list=self.getClients())
+        self.scrollable_checkbox_frame.grid(row=2, column=0)
 
-        self.entry_data = customtkinter.CTkEntry(self)
-        self.entry_data.grid(row=1, column=1, padx=10, pady=10)
+        self.rightbar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
+        self.rightbar_frame.grid(row=0, column=1, rowspan=4, sticky="nsew")
+
+        self.label_data_frame = customtkinter.CTkFrame(self.rightbar_frame)
+        self.label_data_frame.grid(row=0, column=0, padx=10, pady=10)
+        self.label_data = customtkinter.CTkLabel(self.label_data_frame, text="Data")
+        self.label_data.grid(row=1, column=0, padx=10, pady=2)
+        self.entry_data = customtkinter.CTkEntry(self.label_data_frame)
+        self.entry_data.grid(row=2, column=0, padx=10, pady=5)
         self.entry_data.insert(0, date.today().strftime("%d/%m/%Y"))
 
-        self.label_entrega = customtkinter.CTkLabel(self, text="Entrega")
-        self.label_entrega.grid(row=2, column=0, padx=10, pady=10)
-
-        self.entry_entrega = customtkinter.CTkEntry(self)
-        self.entry_entrega.grid(row=2, column=1, padx=10, pady=10)
+        self.label_entrega_frame = customtkinter.CTkFrame(self.rightbar_frame)
+        self.label_entrega_frame.grid(row=0, column=1, padx=10, pady=10)
+        self.label_entrega = customtkinter.CTkLabel(self.label_entrega_frame, text="Entrega")
+        self.label_entrega.grid(row=1, column=1, padx=10, pady=2)
+        self.entry_entrega = customtkinter.CTkEntry(self.label_entrega_frame)
+        self.entry_entrega.grid(row=2, column=1, padx=10, pady=5)
         self.entry_entrega.insert(0, date.today().strftime("%d/%m/%Y"))
 
-        self.label_pago = customtkinter.CTkLabel(self, text="Pago")
-        self.label_pago.grid(row=3, column=0, padx=10, pady=10)
-
-        self.entry_pago = customtkinter.CTkEntry(self)
-        self.entry_pago.grid(row=3, column=1, padx=10, pady=10)
+        self.label_pago_frame = customtkinter.CTkFrame(self.rightbar_frame)
+        self.label_pago_frame.grid(row=1, column=0, padx=10, pady=10)
+        self.label_pago = customtkinter.CTkLabel(self.label_pago_frame, text="Pago")
+        self.label_pago.grid(row=1, column=0, padx=10, pady=2)
+        self.entry_pago = customtkinter.CTkEntry(self.label_pago_frame)
+        self.entry_pago.grid(row=2, column=0, padx=10, pady=5)
         self.entry_pago.insert(0, "R$ 0,00")
 
-        self.label_total = customtkinter.CTkLabel(self, text="Total")
-        self.label_total.grid(row=4, column=0, padx=10, pady=10)
-
-        self.entry_total = customtkinter.CTkEntry(self)
-        self.entry_total.grid(row=4, column=1, padx=10, pady=10)
+        self.label_total_frame = customtkinter.CTkFrame(self.rightbar_frame)
+        self.label_total_frame.grid(row=1, column=1, padx=10, pady=10)
+        self.label_total = customtkinter.CTkLabel(self.label_total_frame, text="Total")
+        self.label_total.grid(row=1, column=1, padx=10, pady=2)
+        self.entry_total = customtkinter.CTkEntry(self.label_total_frame)
+        self.entry_total.grid(row=2, column=1, padx=10, pady=5)
         self.entry_total.insert(0, "R$ 0,00")
 
-        self.label_observacao = customtkinter.CTkLabel(self, text="Observação")
-        self.label_observacao.grid(row=5, column=0, padx=10, pady=10)
+        self.label_obs_frame = customtkinter.CTkFrame(self.rightbar_frame)
+        self.label_obs_frame.grid(row=2, column=0, padx=10, pady=10)
+        self.label_obs = customtkinter.CTkLabel(self.label_obs_frame, text="Observação")
+        self.label_obs.grid(row=1, column=0, padx=10, pady=2)
+        self.entry_obs = customtkinter.CTkEntry(self.label_obs_frame)
+        self.entry_obs.grid(row=2, column=0, padx=10, pady=5)
 
-        self.entry_observacao = customtkinter.CTkEntry(self)
-        self.entry_observacao.grid(row=5, column=1, padx=10, pady=10)
+        self.label_status_frame = customtkinter.CTkFrame(self.rightbar_frame)
+        self.label_status_frame.grid(row=2, column=1, padx=10, pady=10)
+        self.label_status = customtkinter.CTkLabel(self.label_status_frame, text="Status")
+        self.label_status.grid(row=1, column=0, padx=10, pady=2)
+        self.combobox_status = customtkinter.CTkComboBox(self.label_status_frame, values=["Confirmado", "Pago", "Entregue"])
+        self.combobox_status.grid(row=2, column=0, padx=10, pady=5)
 
-        self.label_status = customtkinter.CTkLabel(self, text="Status")
-        self.label_status.grid(row=6, column=0, padx=10, pady=10)
-
-        self.combobox_status = customtkinter.CTkComboBox(self, values=["Confirmado", "Pago", "Entregue"])
-        self.combobox_status.grid(row=6, column=1, padx=10, pady=10)
-
-        self.button_cadastrar = customtkinter.CTkButton(self, text="Cadastrar", command=self.cadastrar_pedido)
-        self.button_cadastrar.grid(row=7, column=0, padx=10, pady=10)
-
-        self.button_voltar = customtkinter.CTkButton(self, text="Cancelar", command=self.back_menu)
-        self.button_voltar.grid(row=7, column=1, padx=10, pady=10)
+        self.button_cadastrar = customtkinter.CTkButton(self.rightbar_frame, text="Cadastrar", command=self.cadastrar_pedido)
+        self.button_cadastrar.grid(row=7, column=0, columnspan=2, padx=10, pady=10)
 
     def getClients(self):
         clientes = select("SELECT nome FROM clientes")
@@ -256,14 +279,10 @@ class OrderRegistration(customtkinter.CTkFrame):
             execute("CREATE TABLE IF NOT EXISTS pedidos (id INTEGER PRIMARY KEY AUTOINCREMENT, cliente TEXT, data TEXT, entrega TEXT, pago FLOAT, total FLOAT, observacao TEXT, status TEXT)")
             execute(f"INSERT INTO pedidos (cliente, data, entrega, pago, total, observacao, status) VALUES ('{cliente}', '{data}', '{entrega}', '{pago}', '{total}', '{observacao}', '{status}')")
             tkinter.messagebox.showinfo("Sucesso", "Pedido cadastrado com sucesso")
-            self.master.back_menu()
+            self.master.dashboard()
             self.destroy()
         except:
             tkinter.messagebox.showerror("Error", "Erro ao cadastrar pedido")
-
-    def back_menu(self):
-        self.master.back_menu()
-        self.destroy()
 
 class OrderList(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -290,12 +309,12 @@ class OrderList(customtkinter.CTkFrame):
 
         self.tv=tkinter.ttk.Treeview(self, columns=(1,2,3,4,5,6,7,8), show="headings", height="5")
         self.tv.column(1, width=50, anchor='c')
-        self.tv.column(2, width=100, anchor='c')
+        self.tv.column(2, width=120, anchor='c')
         self.tv.column(3, width=100, anchor='c')
         self.tv.column(4, width=100, anchor='c')
         self.tv.column(5, width=100, anchor='c')
         self.tv.column(6, width=100, anchor='c')
-        self.tv.column(7, width=100, anchor='c')
+        self.tv.column(7, width=120, anchor='c')
         self.tv.column(8, width=100, anchor='c')
 
         self.tv.heading(1, text="ID")
@@ -309,21 +328,7 @@ class OrderList(customtkinter.CTkFrame):
         self.tv.pack()
         getPedidos()
         self.tv.bind("<Double-1>", self.onDoubleClick)
-        self.ipady()
-
-        self.button_voltar = customtkinter.CTkButton(self, text="Voltar", command=self.back_menu)
-        self.button_voltar.grid(row=1, column=0, padx=10, pady=10)
-
-    def ipady(self):
-        rows = select("SELECT ID FROM pedidos")
-        if len(rows) < 11:
-            self.tv.grid(row=0, column=0, ipady=60, padx=10, pady=10)
-        elif len(rows) < 16:
-            self.tv.grid(row=0, column=0, ipady=110, padx=10, pady=10)
-        elif len(rows) < 21:
-            self.tv.grid(row=0, column=0, ipady=160, padx=10, pady=10)
-        elif len(rows) >= 21:
-            self.tv.grid(row=0, column=0, ipady=210, padx=10, pady=10)
+        self.tv.grid(row=0, column=0, ipady=105)
         
     def onDoubleClick(self, event):
         item = self.tv.identify('item', event.x, event.y)
@@ -332,10 +337,6 @@ class OrderList(customtkinter.CTkFrame):
         self.editar_pedido = OrderEdit(self.master, values)
         self.editar_pedido.grid(row=0, column=0, padx=10, pady=10)
     
-    def back_menu(self):
-        self.master.back_menu()
-        self.destroy()
-
 class OrderEdit(customtkinter.CTkFrame):
     def __init__(self, master, values, **kwargs):
         super().__init__(master, **kwargs)
@@ -399,9 +400,6 @@ class OrderEdit(customtkinter.CTkFrame):
         self.button_salvar = customtkinter.CTkButton(self, text="Salvar", command=self.salvar)
         self.button_salvar.grid(row=7, column=0, padx=10, pady=10)
 
-        self.button_cancelar = customtkinter.CTkButton(self, text="Cancelar", command=self.cancelar)
-        self.button_cancelar.grid(row=7, column=1, padx=10, pady=10)
-
     def salvar(self):
         id = self.entry_id.get()
         cliente = self.entry_cliente.get()
@@ -416,10 +414,6 @@ class OrderEdit(customtkinter.CTkFrame):
             tkinter.messagebox.showinfo("Sucesso", "Pedido editado com sucesso")
         except:
             tkinter.messagebox.showerror("Erro", "Não foi possível editar o pedido")
-        self.master.order_list()
-        self.destroy()
-
-    def cancelar(self):
         self.master.order_list()
         self.destroy()
 
@@ -460,9 +454,6 @@ class ClientRegistration(customtkinter.CTkFrame):
         self.button_salvar = customtkinter.CTkButton(self, text="Salvar", command=self.salvar)
         self.button_salvar.grid(row=5, column=0, padx=10, pady=10)
 
-        self.button_cancelar = customtkinter.CTkButton(self, text="Cancelar", command=self.cancelar)
-        self.button_cancelar.grid(row=5, column=1, padx=10, pady=10)
-
     def salvar(self):
         nome = self.entry_nome.get()
         telefone = self.entry_telefone.get()
@@ -475,13 +466,9 @@ class ClientRegistration(customtkinter.CTkFrame):
             tkinter.messagebox.showinfo("Sucesso", "Cliente cadastrado com sucesso")
         except:
             tkinter.messagebox.showerror("Erro", "Não foi possível cadastrar o cliente")
-        self.master.back_menu()
+        self.master.dashboard()
         self.destroy()
     
-    def cancelar(self):
-        self.master.back_menu()
-        self.destroy()
-
 class ClientList(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -493,10 +480,10 @@ class ClientList(customtkinter.CTkFrame):
 
         self.tv=tkinter.ttk.Treeview(self, columns=(1,2,3,4,5,6), show="headings", height="5")
         self.tv.column(1, width=50, minwidth=50, stretch=tkinter.NO)
-        self.tv.column(2, width=100, minwidth=100, stretch=tkinter.NO)
+        self.tv.column(2, width=200, minwidth=100, stretch=tkinter.NO)
         self.tv.column(3, width=100, minwidth=100, stretch=tkinter.NO)
-        self.tv.column(4, width=100, minwidth=100, stretch=tkinter.NO)
-        self.tv.column(5, width=100, minwidth=100, stretch=tkinter.NO)
+        self.tv.column(4, width=200, minwidth=100, stretch=tkinter.NO)
+        self.tv.column(5, width=140, minwidth=100, stretch=tkinter.NO)
         self.tv.column(6, width=100, minwidth=100, stretch=tkinter.NO)
         self.tv.heading(1, text="ID")
         self.tv.heading(2, text="Nome")
@@ -507,21 +494,14 @@ class ClientList(customtkinter.CTkFrame):
         self.tv.pack()
         getCliente()
         self.tv.bind("<Double-1>", self.onDoubleClick)
-        self.tv.grid(row=0, column=0, padx=10, pady=10)
+        self.tv.grid(row=0, column=0, ipady=105)
     
-        self.button_voltar = customtkinter.CTkButton(self, text="Voltar", command=self.back_menu)
-        self.button_voltar.grid(row=1, column=0, padx=10, pady=10)
-
     def onDoubleClick(self, event):
         item = self.tv.identify('item', event.x, event.y)
         values = self.tv.item(item, "values")
         self.destroy()
         self.editar_pedido = ClientEdit(self.master, values)
         self.editar_pedido.grid(row=0, column=0, padx=10, pady=10)
-
-    def back_menu(self):
-        self.master.back_menu()
-        self.destroy()
 
 class ClientEdit(customtkinter.CTkFrame):
     def __init__(self, master, values, **kwargs):
@@ -572,9 +552,6 @@ class ClientEdit(customtkinter.CTkFrame):
         self.button_salvar = customtkinter.CTkButton(self, text="Salvar", command=self.salvar)
         self.button_salvar.grid(row=5, column=0, padx=10, pady=10)
 
-        self.button_voltar = customtkinter.CTkButton(self, text="Voltar", command=self.back_menu)
-        self.button_voltar.grid(row=5, column=1, padx=10, pady=10)
-
     def salvar(self):
         id = self.entry_id.get()
         nome = self.entry_nome.get()
@@ -590,10 +567,6 @@ class ClientEdit(customtkinter.CTkFrame):
             self.destroy()
         except:
             tkinter.messagebox.showerror("Error", "All fields are required")
-        
-    def back_menu(self):
-        self.master.client_list()
-        self.destroy()
 
 class OnClose(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -621,7 +594,6 @@ class Aplication(customtkinter.CTk):
         super().__init__()
         self.title("Open-Order")
         self.resizable(False, False)
-
         customtkinter.set_appearance_mode("dark")
 
         self.login = Login(self)
@@ -640,31 +612,27 @@ class Aplication(customtkinter.CTk):
                 tkinter.messagebox.showerror("Error", "User or password invalid")
         except:
             tkinter.messagebox.showerror("Error", "Invalid user or password")
-
-    def back_menu(self):
-        self.menu.destroy()
-        self.menu = Menu(self)
-        self.menu.grid(row=0, column=0, padx=10, pady=10)
+    
+    def dashboard(self):
+        self.dashboard = Dashboard(self.menu.rightbar_frame)
+        self.dashboard.grid(row=0, column=0, sticky="nsew")
 
     def order_registration(self):
-        self.menu.destroy()
-        self.cadastrar_pedido = OrderRegistration(self)
-        self.cadastrar_pedido.grid(row=0, column=0, padx=10, pady=10)
+        self.dashboard = OrderRegistration(self.menu.rightbar_frame)
+        self.dashboard.grid(row=0, column=0, sticky="nsew")
+
 
     def order_list(self):
-        self.menu.destroy()
-        self.listar_pedido = OrderList(self)
-        self.listar_pedido.grid(row=0, column=0, padx=10, pady=10)
+        self.dashboard = OrderList(self.menu.rightbar_frame)
+        self.dashboard.grid(row=0, column=0, sticky="nsew")
 
     def client_registration(self):
-        self.menu.destroy()
-        self.cadastrar_cliente = ClientRegistration(self)
-        self.cadastrar_cliente.grid(row=0, column=0, padx=10, pady=10)
+        self.dashboard = ClientRegistration(self.menu.rightbar_frame)
+        self.dashboard.grid(row=0, column=0, sticky="nsew")
 
     def client_list(self):
-        self.menu.destroy()
-        self.listar_cliente = ClientList(self)
-        self.listar_cliente.grid(row=0, column=0, padx=10, pady=10)
+        self.dashboard = ClientList(self.menu.rightbar_frame)
+        self.dashboard.grid(row=0, column=0, sticky="nsew")
 
     def contabilidade(self):
         pass
