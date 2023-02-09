@@ -1,3 +1,4 @@
+import updater
 import sqlite3
 import tkinter
 import customtkinter
@@ -590,6 +591,8 @@ class Aplication(customtkinter.CTk):
         self.title("Open-Order")
         self.resizable(False, False)
         customtkinter.set_appearance_mode("dark")
+
+        updater.updater.update()
 
         self.login = Login(self)
         self.login.grid(row=0, column=0, padx=10, pady=10)
