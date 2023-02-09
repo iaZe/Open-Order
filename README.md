@@ -19,9 +19,10 @@ O projeto ainda está em desenvolvimento e as próximas atualizações serão vo
 - [x] Melhoria da interface de usuário (melhorias visuais)
 - [x] Criação de um sistema de login
 - [x] Criação do dashboard no menu principal
-- [x] Estilização do menu principal
+- [x] Estilização e funciomaneto do menu principal
+- [ ] Setar ID global para os clientes e marcar o ID do cliente no pedido (deixando o cliente com colocações de pedidos)
 - [ ] Sistema de login utilizando criptografia
-- [ ] Criação da área de contabilidade (aguardando validação do cliente)
+- [ ] Criação da área de contabilidade
 
 ## 💻 Pré-requisitos
 
