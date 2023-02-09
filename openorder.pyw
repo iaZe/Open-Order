@@ -118,6 +118,9 @@ class Dashboard(customtkinter.CTkFrame):
         def get_daily():
             pedidos = select("SELECT * FROM pedidos WHERE entrega = '{}'".format(date.today().strftime("%d/%m/%Y")))
             for i in pedidos:
+                i = list(i)
+                i[4] = f"R$ {i[4]}"
+                i[5] = f"R$ {i[5]}"
                 if i[7] == "Pago":
                     self.tv.insert("", "end", values=i, tag="paid")
                 elif i[7] == "Cancelado":
@@ -261,7 +264,7 @@ class OrderRegistration(customtkinter.CTkFrame):
         self.button_cadastrar.grid(row=7, column=0, columnspan=2, padx=10, pady=10)
 
     def getClients(self):
-        clientes = select("SELECT nome FROM clientes")
+        clientes = select("SELECT nome FROM clientes ORDER BY nome ASC")
         client_list = ','.join([str(cliente[0]) for cliente in clientes]).split(',')
         return client_list
 
@@ -292,6 +295,9 @@ class OrderList(customtkinter.CTkFrame):
         def getPedidos():
             pedidos = select("SELECT * FROM pedidos")
             for i in pedidos:
+                i = list(i)
+                i[4] = f"R$ {i[4]}"
+                i[5] = f"R$ {i[5]}"
                 if i[7] == "Pago":
                     self.tv.insert("", "end", values=i, tag="paid")
                 elif i[7] == "Cancelado":
