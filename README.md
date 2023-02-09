@@ -6,7 +6,7 @@
 ![Bitbucket open issues](https://img.shields.io/bitbucket/issues/iaZe/StockFlow?style=for-the-badge)
 ![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/iaZe/StockFlow?style=for-the-badge)
 
-<img src="/images/order.jpg" alt="exemplo imagem">
+<img src="/images/dashboard.jpg" alt="Dashboard">
 
 > Open-Order é um projeto de estudo que visa a criação de um sistema de gerenciamento de pedidos de uma loja.
 

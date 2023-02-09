@@ -273,16 +273,17 @@ class OrderRegistration(customtkinter.CTkFrame):
         pago = float(pago.replace(",", "."))
         total = self.entry_total.get().replace("R$", "").strip()
         total = float(total.replace(",", "."))
-        observacao = self.entry_observacao.get()
+        observacao = self.entry_obs.get()
         status = self.combobox_status.get()
         try:
             execute("CREATE TABLE IF NOT EXISTS pedidos (id INTEGER PRIMARY KEY AUTOINCREMENT, cliente TEXT, data TEXT, entrega TEXT, pago FLOAT, total FLOAT, observacao TEXT, status TEXT)")
             execute(f"INSERT INTO pedidos (cliente, data, entrega, pago, total, observacao, status) VALUES ('{cliente}', '{data}', '{entrega}', '{pago}', '{total}', '{observacao}', '{status}')")
             tkinter.messagebox.showinfo("Sucesso", "Pedido cadastrado com sucesso")
-            self.master.dashboard()
-            self.destroy()
         except:
             tkinter.messagebox.showerror("Error", "Erro ao cadastrar pedido")
+        self.dashboard = OrderRegistration(self.master)
+        self.dashboard.grid(row=0, column=0, sticky="nsew")
+        self.destroy()
 
 class OrderList(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
