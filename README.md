@@ -1,10 +1,10 @@
 # Open-Order
 
-![GitHub repo size](https://img.shields.io/github/repo-size/iaZe/StockFlow?style=for-the-badge)
-![GitHub language count](https://img.shields.io/github/languages/count/iaZe/StockFlow?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/iaZe/StockFlow?style=for-the-badge)
-![Bitbucket open issues](https://img.shields.io/bitbucket/issues/iaZe/StockFlow?style=for-the-badge)
-![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/iaZe/StockFlow?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/iaZe/Open-Order?style=for-the-badge)
+![GitHub language count](https://img.shields.io/github/languages/count/iaZe/Open-Order?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/iaZe/Open-Order?style=for-the-badge)
+![Bitbucket open issues](https://img.shields.io/bitbucket/issues/iaZe/Open-Order?style=for-the-badge)
+![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/iaZe/Open-Order?style=for-the-badge)
 
 <img src="/images/dashboard.jpg" alt="Dashboard">
 
