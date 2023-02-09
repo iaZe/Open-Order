@@ -19,7 +19,7 @@ O projeto ainda está em desenvolvimento e as próximas atualizações serão vo
 - [x] Melhoria da interface de usuário (melhorias visuais)
 - [x] Criação de um sistema de login
 - [x] Criação do dashboard no menu principal
-- [ ] Reestilização do menu principal
+- [x] Estilização do menu principal
 - [ ] Sistema de login utilizando criptografia
 - [ ] Criação da área de contabilidade (aguardando validação do cliente)
 
