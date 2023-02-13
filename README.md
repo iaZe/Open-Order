@@ -22,6 +22,8 @@ O projeto ainda está em desenvolvimento e as próximas atualizações serão vo
 - [x] Estilização e funciomaneto do menu principal
 - [x] Updater para atualização automática do sistema
 - [x] Marcar clientes com pedidos ativos
+- [x] Criação do usuário ao iniciar o sistema pela primeira vez
+- [x] Criação do banco de dados ao iniciar o sistema pela primeira vez
 - [ ] Sistema de login utilizando criptografia
 - [ ] Criação da área de contabilidade
 

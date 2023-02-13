@@ -1,3 +1,4 @@
+import os
 import updater
 import sqlite3
 import tkinter
@@ -25,6 +26,68 @@ def execute(query):
         cursor.execute(query)
         connection.commit()
 
+class CreateDataBase():
+    def __init__(self):
+        self.create_table_user()
+        self.create_table_client()
+        self.create_table_order()
+
+    def create_table_user(self):
+        execute("CREATE TABLE IF NOT EXISTS usuarios (usuario TEXT NOT NULL, senha TEXT NOT NULL)")
+
+    def create_table_client(self):
+        execute("CREATE TABLE IF NOT EXISTS clientes (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, telefone TEXT, endereco TEXT, cidade TEXT, estado TEXT)")
+
+    def create_table_order(self):
+        execute("CREATE TABLE IF NOT EXISTS pedidos (id INTEGER PRIMARY KEY AUTOINCREMENT, cliente TEXT, data TEXT, entrega TEXT, pago FLOAT, total FLOAT, observacao TEXT, status TEXT)")
+
+class NewUser(customtkinter.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+
+        self.label_user = customtkinter.CTkLabel(self, text="Usuário")
+        self.label_user.grid(row=0, column=0, padx=10, pady=10)
+
+        self.entry_user = customtkinter.CTkEntry(self)
+        self.entry_user.grid(row=0, column=1, padx=10, pady=10)
+
+        self.label_password = customtkinter.CTkLabel(self, text="Senha")
+        self.label_password.grid(row=1, column=0, padx=10, pady=10)
+
+        self.entry_password = customtkinter.CTkEntry(self, show="*")
+        self.entry_password.grid(row=1, column=1, padx=10, pady=10)
+
+        self.label_password2 = customtkinter.CTkLabel(self, text="Confirmar senha")
+        self.label_password2.grid(row=2, column=0, padx=10, pady=10)
+
+        self.entry_password2 = customtkinter.CTkEntry(self, show="*")
+        self.entry_password2.grid(row=2, column=1, padx=10, pady=10)
+
+        self.button_create = customtkinter.CTkButton(self, text="Criar", command=self.master.newuser)
+        self.button_create.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+
+class Login(customtkinter.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+
+        self.label = customtkinter.CTkLabel(self, text="Login")
+        self.label.grid(row=0, column=0, columnspan=2, pady=10)
+
+        self.label_user = customtkinter.CTkLabel(self, text="User")
+        self.label_user.grid(row=1, column=0, padx=10, pady=10)
+
+        self.entry_user = customtkinter.CTkEntry(self)
+        self.entry_user.grid(row=1, column=1, padx=10, pady=10)
+
+        self.label_password = customtkinter.CTkLabel(self, text="Password")
+        self.label_password.grid(row=2, column=0, padx=10, pady=10)
+
+        self.entry_password = customtkinter.CTkEntry(self, show="*")
+        self.entry_password.grid(row=2, column=1, padx=10, pady=10)
+
+        self.button_login = customtkinter.CTkButton(self, text="Login", command=self.master.login)
+        self.button_login.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+
 class ScrollableRadiobuttonFrame(customtkinter.CTkScrollableFrame):
     def __init__(self, master, item_list, command=None, **kwargs):
         super().__init__(master, **kwargs)
@@ -51,28 +114,6 @@ class ScrollableRadiobuttonFrame(customtkinter.CTkScrollableFrame):
 
     def get_checked_item(self):
         return self.radiobutton_variable.get()
-
-class Login(customtkinter.CTkFrame):
-    def __init__(self, master, **kwargs):
-        super().__init__(master, **kwargs)
-
-        self.label = customtkinter.CTkLabel(self, text="Login")
-        self.label.grid(row=0, column=0, columnspan=2, pady=10)
-
-        self.label_user = customtkinter.CTkLabel(self, text="User")
-        self.label_user.grid(row=1, column=0, padx=10, pady=10)
-
-        self.entry_user = customtkinter.CTkEntry(self)
-        self.entry_user.grid(row=1, column=1, padx=10, pady=10)
-
-        self.label_password = customtkinter.CTkLabel(self, text="Password")
-        self.label_password.grid(row=2, column=0, padx=10, pady=10)
-
-        self.entry_password = customtkinter.CTkEntry(self, show="*")
-        self.entry_password.grid(row=2, column=1, padx=10, pady=10)
-
-        self.button_login = customtkinter.CTkButton(self, text="Login", command=self.master.login)
-        self.button_login.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
 class Menu(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -594,14 +635,37 @@ class OnClose(customtkinter.CTkFrame):
 class Aplication(customtkinter.CTk):
     def __init__(self):
         super().__init__()
+        
         self.title("Open-Order")
         self.resizable(False, False)
         customtkinter.set_appearance_mode("dark")
-
         updater.updater.update()
 
-        self.login = Login(self)
-        self.login.grid(row=0, column=0, padx=10, pady=10)
+        if not os.path.exists("database.db"):
+            CreateDataBase()
+
+        if not select("SELECT * FROM usuarios"):
+            self.newuser = NewUser(self)
+            self.newuser.grid(row=0, column=0, padx=10, pady=10)
+        else:
+            self.login = Login(self)
+            self.login.grid(row=0, column=0, padx=10, pady=10)
+
+    def newuser(self):
+        user = self.newuser.entry_user.get()
+        password = self.newuser.entry_password.get()
+        password2 = self.newuser.entry_password2.get()
+        if password == password2:
+            try:
+                execute(f"INSERT INTO usuarios (usuario, senha) VALUES ('{user}', '{password}')")
+                self.newuser.destroy()
+                self.login = Login(self)
+                self.login.grid(row=0, column=0, padx=10, pady=10)
+            except:
+                tkinter.messagebox.showerror("Error", "Error")
+        else:
+            self.entry_password.delete(0, tkinter.END)
+            self.entry_password2.delete(0, tkinter.END)
 
     def login(self):
         user = self.login.entry_user.get()
@@ -643,7 +707,6 @@ class Aplication(customtkinter.CTk):
     def on_close(self):
         self.on_close = OnClose(self, border_width=2, border_color="#cecece")
         self.on_close.grid(row=0, column=0, padx=10, pady=10)
-
 
 app = Aplication()
 app.mainloop()
