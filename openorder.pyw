@@ -463,7 +463,7 @@ class ClientRegistration(customtkinter.CTkFrame):
             tkinter.messagebox.showinfo("Sucesso", "Cliente cadastrado com sucesso")
         except:
             tkinter.messagebox.showerror("Erro", "Não foi possível cadastrar o cliente")
-        self.master.dashboard()
+        self.dashboard = ClientList(self.master)
         self.destroy()
     
 class ClientList(customtkinter.CTkFrame):
@@ -473,7 +473,13 @@ class ClientList(customtkinter.CTkFrame):
         def getCliente():
             clientes = select("SELECT * FROM clientes")
             for i in clientes:
-                self.tv.insert("", "end", values=i)
+                pedidos = select(f"SELECT COUNT(*) FROM pedidos WHERE cliente = '{i[1]}' AND (status='Pago' OR status='Confirmado')")
+                if pedidos[0][0] >= 1:
+                    self.tv.insert("", "end", values=i, tag="paid")
+                else:
+                    self.tv.insert("", "end", values=i)
+
+                self.tv.tag_configure("paid", background="#90EE90")
 
         self.tv=tkinter.ttk.Treeview(self, columns=(1,2,3,4,5,6), show="headings", height="5")
         self.tv.column(1, width=50, minwidth=50, stretch=tkinter.NO)

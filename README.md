@@ -21,7 +21,7 @@ O projeto ainda está em desenvolvimento e as próximas atualizações serão vo
 - [x] Criação do dashboard no menu principal
 - [x] Estilização e funciomaneto do menu principal
 - [x] Updater para atualização automática do sistema
-- [ ] Setar ID global para os clientes e marcar o ID do cliente no pedido (deixando o cliente com colocações de pedidos)
+- [x] Marcar clientes com pedidos ativos
 - [ ] Sistema de login utilizando criptografia
 - [ ] Criação da área de contabilidade
 
