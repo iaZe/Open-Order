@@ -641,8 +641,7 @@ class Aplication(customtkinter.CTk):
         customtkinter.set_appearance_mode("dark")
         updater.updater.update()
 
-        if not os.path.exists("database.db"):
-            CreateDataBase()
+        CreateDataBase()
 
         if not select("SELECT * FROM usuarios"):
             self.newuser = NewUser(self)
