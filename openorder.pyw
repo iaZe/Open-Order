@@ -427,12 +427,15 @@ class OrderEdit(customtkinter.CTkFrame):
         self.label_status = customtkinter.CTkLabel(self, text="Status")
         self.label_status.grid(row=4, column=1, padx=10, pady=2)
 
-        self.entry_status = customtkinter.CTkEntry(self)
-        self.entry_status.grid(row=5, column=1, padx=10, pady=5)
-        self.entry_status.insert(0, values[7])
+        self.combobox_status = customtkinter.CTkComboBox(self, values=["Confirmado", "Pago", "Entregue", "Cancelado"])
+        self.combobox_status.grid(row=5, column=1, padx=10, pady=5)
+        self.combobox_status.set(values[7])
 
         self.button_salvar = customtkinter.CTkButton(self, text="Salvar", command=self.salvar)
-        self.button_salvar.grid(row=6, column=0, columnspan=2, padx=10, pady=10)
+        self.button_salvar.grid(row=6, column=0, padx=10, pady=10)
+
+        self.button_excluir = customtkinter.CTkButton(self, text="Excluir", command=self.excluir)
+        self.button_excluir.grid(row=6, column=1, padx=10, pady=10)
 
         self.id = values[0]
         self.cliente = values[1]
@@ -445,12 +448,23 @@ class OrderEdit(customtkinter.CTkFrame):
         pago = self.entry_pago.get()
         total = self.entry_total.get()
         observacao = self.entry_observacao.get()
-        status = self.entry_status.get()
+        status = self.combobox_status.get()
         try:
             execute(f"UPDATE pedidos SET cliente = '{cliente}', data = '{data}', entrega = '{entrega}', pago = '{pago}', total = '{total}', observacao = '{observacao}', status = '{status}' WHERE id = {id}")
             tkinter.messagebox.showinfo("Sucesso", "Pedido editado com sucesso")
         except:
             tkinter.messagebox.showerror("Erro", "Não foi possível editar o pedido")
+        self.dashboard = OrderList(self.master)
+        self.dashboard.grid(row=0, column=0, sticky="nsew")
+        self.destroy()
+    
+    def excluir(self):
+        id = self.id
+        try:
+            execute(f"DELETE FROM pedidos WHERE id = {id}")
+            tkinter.messagebox.showinfo("Sucesso", "Pedido excluído com sucesso")
+        except:
+            tkinter.messagebox.showerror("Erro", "Não foi possível excluir o pedido")
         self.dashboard = OrderList(self.master)
         self.dashboard.grid(row=0, column=0, sticky="nsew")
         self.destroy()
@@ -595,6 +609,9 @@ class ClientEdit(customtkinter.CTkFrame):
         self.button_salvar = customtkinter.CTkButton(self, text="Salvar", command=self.salvar)
         self.button_salvar.grid(row=5, column=0, padx=10, pady=10)
 
+        self.button_excluir = customtkinter.CTkButton(self, text="Excluir", command=self.excluir)
+        self.button_excluir.grid(row=5, column=1, padx=10, pady=10)
+
     def salvar(self):
         id = self.entry_id.get()
         nome = self.entry_nome.get()
@@ -602,10 +619,19 @@ class ClientEdit(customtkinter.CTkFrame):
         endereco = self.entry_endereco.get()
         cidade = self.entry_cidade.get()
         estado = self.entry_estado.get()
-
         try:
             execute(f"UPDATE clientes SET nome='{nome}', telefone='{telefone}', endereco='{endereco}', cidade='{cidade}', estado='{estado}' WHERE id={id}")
             tkinter.messagebox.showinfo("Sucesso", "Cliente editado com sucesso")
+        except:
+            tkinter.messagebox.showerror("Error", "All fields are required")
+        self.dashboard = ClientList(self.master)
+        self.dashboard.grid(row=0, column=0, sticky="nsew")
+
+    def excluir(self):
+        id = self.entry_id.get()
+        try:
+            execute(f"DELETE FROM clientes WHERE id={id}")
+            tkinter.messagebox.showinfo("Sucesso", "Cliente excluído com sucesso")
         except:
             tkinter.messagebox.showerror("Error", "All fields are required")
         self.dashboard = ClientList(self.master)
