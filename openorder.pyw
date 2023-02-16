@@ -206,14 +206,6 @@ class Dashboard(customtkinter.CTkFrame):
         previsao = select(f"SELECT SUM(total) FROM pedidos WHERE data LIKE '%%/{date.today().strftime('%m/%Y')}'")
         self.label_month_value = customtkinter.CTkLabel(self.profit, text="R$ {}".format(previsao[0][0]), font=bigPoppins)
         self.label_month_value.grid(row=1, column=0, padx=10)
-
-        self.costs = customtkinter.CTkFrame(self.rightupbar_frame)
-        self.costs.grid(row=0, column=4, padx=10, pady=10)
-        self.label_month = customtkinter.CTkLabel(self.costs, text="Custos          ", font=smallPoppins)
-        self.label_month.grid(row=0, column=0, padx=10, pady=10)
-        custos = select(f"SELECT SUM(total) FROM pedidos WHERE data LIKE '%%/{date.today().strftime('%m/%Y')}'")
-        self.label_month_value = customtkinter.CTkLabel(self.costs, text="R$ {}".format(custos[0][0]), font=bigPoppins)
-        self.label_month_value.grid(row=1, column=0, padx=10)
     
         self.rightdownbar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.rightdownbar_frame.grid(row=2, column=1, sticky="nsew")
