@@ -25,7 +25,7 @@ O projeto ainda está em desenvolvimento e as próximas atualizações serão vo
 - [x] Criação do usuário ao iniciar o sistema pela primeira vez
 - [x] Criação do banco de dados ao iniciar o sistema pela primeira vez
 - [x] Excluir pedidos e clientes
-- [ ] Filtros para clientes e pedidos
+- [x] Filtros para clientes e pedidos
 - [ ] Sistema de login utilizando criptografia
 - [ ] Criação da área de contabilidade
 - [ ] Melhorias de performance

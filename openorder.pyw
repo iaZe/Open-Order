@@ -146,7 +146,7 @@ class Menu(customtkinter.CTkFrame):
 
         self.rightbar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.rightbar_frame.grid(row=0, column=3, rowspan=4, sticky="nsew")
-        # Função para chamar as classes para o rightbar dependendo da opção escolhida no menu
+
         self.dashboard = Dashboard(self.rightbar_frame)
         self.dashboard.grid(row=0, column=0, sticky="nsew")
 
@@ -334,27 +334,12 @@ class OrderList(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        def getPedidos():
-            pedidos = select("SELECT * FROM pedidos")
-            for i in pedidos:
-                i = list(i)
-                i[4] = f"R$ {i[4]}"
-                i[5] = f"R$ {i[5]}"
-                if i[7] == "Pago":
-                    self.tv.insert("", "end", values=i, tag="paid")
-                elif i[7] == "Cancelado":
-                    self.tv.insert("", "end", values=i, tag="canceled")
-                elif i[7] == "Entregue":
-                    self.tv.insert("", "end", values=i, tag="delivered")
-                elif i[7] == "Confirmado":
-                    self.tv.insert("", "end", values=i, tag="confirmed")
-                else:
-                    self.tv.insert("", "end", values=i)
-                
-                self.tv.tag_configure("paid", background="#90EE90")
-                self.tv.tag_configure("canceled", background="#FFA07A")
-                self.tv.tag_configure("delivered", background="#87CEFA")
-                self.tv.tag_configure("confirmed", background="#FFFFE0")
+        self.search_frame = customtkinter.CTkFrame(self)
+        self.search_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+        self.search_entry = customtkinter.CTkEntry(self.search_frame)
+        self.search_entry.grid(row=0, column=0, padx=10, pady=5)
+        self.search_button = customtkinter.CTkButton(self.search_frame, text="Pesquisar", command=self.onSearch)
+        self.search_button.grid(row=0, column=1, padx=10, pady=5)
 
         self.tv=tkinter.ttk.Treeview(self, columns=(1,2,3,4,5,6,7,8), show="headings", height="5")
         self.tv.column(1, width=50, anchor='c')
@@ -374,17 +359,72 @@ class OrderList(customtkinter.CTkFrame):
         self.tv.heading(6, text="Total")
         self.tv.heading(7, text="Observação")
         self.tv.heading(8, text="Status")
-        self.tv.pack()
-        getPedidos()
+        self.tv.grid(row=1, column=0, ipady=75)
+        self.getPedidos()
         self.tv.bind("<Double-1>", self.onDoubleClick)
-        self.tv.grid(row=0, column=0, ipady=105)
         
+    def getPedidos(self):
+        pedidos = select("SELECT * FROM pedidos")
+        for i in pedidos:
+            i = list(i)
+            i[4] = f"R$ {i[4]}"
+            i[5] = f"R$ {i[5]}"
+            if i[7] == "Pago":
+                self.tv.insert("", "end", values=i, tag="paid")
+            elif i[7] == "Cancelado":
+                self.tv.insert("", "end", values=i, tag="canceled")
+            elif i[7] == "Entregue":
+                self.tv.insert("", "end", values=i, tag="delivered")
+            elif i[7] == "Confirmado":
+                self.tv.insert("", "end", values=i, tag="confirmed")
+            else:
+                self.tv.insert("", "end", values=i)
+            
+            self.tv.tag_configure("paid", background="#90EE90")
+            self.tv.tag_configure("canceled", background="#FFA07A")
+            self.tv.tag_configure("delivered", background="#87CEFA")
+            self.tv.tag_configure("confirmed", background="#FFFFE0")
+
+    def onSearch(self):
+        for i in self.tv.get_children():
+            self.tv.delete(i)
+        pedidos = select(f"""
+                        SELECT * 
+                        FROM pedidos
+                        WHERE cliente LIKE '%{self.search_entry.get()}%'
+                        OR data LIKE '%{self.search_entry.get()}%'
+                        OR entrega LIKE '%{self.search_entry.get()}%'
+                        OR pago LIKE '%{self.search_entry.get()}%'
+                        OR total LIKE '%{self.search_entry.get()}%'
+                        OR observacao LIKE '%{self.search_entry.get()}%'
+                        OR status LIKE '%{self.search_entry.get()}%'
+                        """)
+        for i in pedidos:
+            i = list(i)
+            i[4] = f"R$ {i[4]}"
+            i[5] = f"R$ {i[5]}"
+            if i[7] == "Pago":
+                self.tv.insert("", "end", values=i, tag="paid")
+            elif i[7] == "Cancelado":
+                self.tv.insert("", "end", values=i, tag="canceled")
+            elif i[7] == "Entregue":
+                self.tv.insert("", "end", values=i, tag="delivered")
+            elif i[7] == "Confirmado":
+                self.tv.insert("", "end", values=i, tag="confirmed")
+            else:
+                self.tv.insert("", "end", values=i)
+            
+            self.tv.tag_configure("paid", background="#90EE90")
+            self.tv.tag_configure("canceled", background="#FFA07A")
+            self.tv.tag_configure("delivered", background="#87CEFA")
+            self.tv.tag_configure("confirmed", background="#FFFFE0")
+
     def onDoubleClick(self, event):
         item = self.tv.identify('item', event.x, event.y)
         values = self.tv.item(item, "values")
         self.editar_pedido = OrderEdit(self, values)
         self.editar_pedido.grid(row=0, column=0, padx=10, pady=10)
-    
+
 class OrderEdit(customtkinter.CTkFrame):
     def __init__(self, master, values, **kwargs):
         super().__init__(master, **kwargs)
@@ -525,16 +565,13 @@ class ClientList(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        def getCliente():
-            clientes = select("SELECT * FROM clientes")
-            for i in clientes:
-                pedidos = select(f"SELECT COUNT(*) FROM pedidos WHERE cliente = '{i[1]}' AND (status='Pago' OR status='Confirmado')")
-                if pedidos[0][0] >= 1:
-                    self.tv.insert("", "end", values=i, tag="paid")
-                else:
-                    self.tv.insert("", "end", values=i)
-
-                self.tv.tag_configure("paid", background="#90EE90")
+        # Search bar
+        self.search_frame = customtkinter.CTkFrame(self)
+        self.search_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+        self.search_entry = customtkinter.CTkEntry(self.search_frame)
+        self.search_entry.grid(row=0, column=0, padx=10, pady=5)
+        self.search_button = customtkinter.CTkButton(self.search_frame, text="Pesquisar", command=self.onSearch)
+        self.search_button.grid(row=0, column=1, padx=10, pady=5)
 
         self.tv=tkinter.ttk.Treeview(self, columns=(1,2,3,4,5,6), show="headings", height="5")
         self.tv.column(1, width=50, minwidth=50, stretch=tkinter.NO)
@@ -549,10 +586,41 @@ class ClientList(customtkinter.CTkFrame):
         self.tv.heading(4, text="Endereço")
         self.tv.heading(5, text="Cidade")
         self.tv.heading(6, text="Estado")
-        self.tv.pack()
-        getCliente()
+        self.getCliente()
         self.tv.bind("<Double-1>", self.onDoubleClick)
-        self.tv.grid(row=0, column=0, ipady=105)
+        self.tv.grid(row=1, column=0, ipady=75)
+
+    def getCliente(self):
+        clientes = select("SELECT * FROM clientes")
+        for i in clientes:
+            pedidos = select(f"SELECT COUNT(*) FROM pedidos WHERE cliente = '{i[1]}' AND (status='Pago' OR status='Confirmado')")
+            if pedidos[0][0] >= 1:
+                self.tv.insert("", "end", values=i, tag="paid")
+            else:
+                self.tv.insert("", "end", values=i)
+
+            self.tv.tag_configure("paid", background="#90EE90")
+
+    def onSearch(self):
+        for i in self.tv.get_children():
+            self.tv.delete(i)
+        clientes = select(f"""
+                        SELECT * 
+                        FROM clientes 
+                        WHERE nome LIKE '%{self.search_entry.get()}%' 
+                            OR telefone LIKE '%{self.search_entry.get()}%' 
+                            OR endereco LIKE '%{self.search_entry.get()}%' 
+                            OR cidade LIKE '%{self.search_entry.get()}%' 
+                            OR estado LIKE '%{self.search_entry.get()}%'
+                    """)
+        for i in clientes:
+            pedidos = select(f"SELECT COUNT(*) FROM pedidos WHERE cliente = '{i[1]}' AND (status='Pago' OR status='Confirmado')")
+            if pedidos[0][0] >= 1:
+                self.tv.insert("", "end", values=i, tag="paid")
+            else:
+                self.tv.insert("", "end", values=i)
+
+            self.tv.tag_configure("paid", background="#90EE90")
     
     def onDoubleClick(self, event):
         item = self.tv.identify('item', event.x, event.y)
