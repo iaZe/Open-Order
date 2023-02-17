@@ -14,21 +14,7 @@
 
 O projeto ainda está em desenvolvimento e as próximas atualizações serão voltadas nas seguintes tarefas:
 
-- [x] Criação da interface geral (UI)
-- [x] Adicição de banco de dados (SQLite)
-- [x] Melhoria da interface de usuário (melhorias visuais)
-- [x] Criação de um sistema de login
-- [x] Criação do dashboard no menu principal
-- [x] Estilização e funciomaneto do menu principal
-- [x] Updater para atualização automática do sistema
-- [x] Marcar clientes com pedidos ativos
-- [x] Criação do usuário ao iniciar o sistema pela primeira vez
-- [x] Criação do banco de dados ao iniciar o sistema pela primeira vez
-- [x] Excluir pedidos e clientes
-- [x] Filtros para clientes e pedidos
-- [ ] Sistema de login utilizando criptografia
-- [ ] Criação da área de contabilidade
-- [ ] Melhorias de performance
+[Consulte aqui as ultimas atualizações](https://github.com/iaZe/Open-Order/releases)
 
 ## 💻 Pré-requisitos
 
