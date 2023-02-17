@@ -63,7 +63,7 @@ class NewUser(customtkinter.CTkFrame):
         self.entry_password2 = customtkinter.CTkEntry(self, show="*")
         self.entry_password2.grid(row=2, column=1, padx=10, pady=10)
 
-        self.button_create = customtkinter.CTkButton(self, text="Criar", command=self.master.newuser)
+        self.button_create = customtkinter.CTkButton(self, text="Criar", command=self.master.newUser)
         self.button_create.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
 class Login(customtkinter.CTkFrame):
@@ -85,7 +85,7 @@ class Login(customtkinter.CTkFrame):
         self.entry_password = customtkinter.CTkEntry(self, show="*")
         self.entry_password.grid(row=2, column=1, padx=10, pady=10)
 
-        self.button_login = customtkinter.CTkButton(self, text="Login", command=self.master.login)
+        self.button_login = customtkinter.CTkButton(self, text="Login", command=self.master.onLogin)
         self.button_login.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
 class ScrollableRadiobuttonFrame(customtkinter.CTkScrollableFrame):
@@ -141,7 +141,7 @@ class Menu(customtkinter.CTkFrame):
         self.button_list_client.grid(row=4, column=0, padx=10, pady=10)
         self.button_accounting = customtkinter.CTkButton(self.leftbar_frame, text="Contabilidade")
         self.button_accounting.grid(row=5, column=0, padx=10, pady=10)
-        self.button_sair = customtkinter.CTkButton(self.leftbar_frame, text="Sair", command=self.master.on_close)
+        self.button_sair = customtkinter.CTkButton(self.leftbar_frame, text="Sair", command=quit)
         self.button_sair.grid(row=6, column=0, padx=10, pady=10)
 
         self.rightbar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
@@ -294,7 +294,7 @@ class OrderRegistration(customtkinter.CTkFrame):
         self.combobox_status = customtkinter.CTkComboBox(self.label_status_frame, values=["Confirmado", "Pago", "Entregue"])
         self.combobox_status.grid(row=2, column=0, padx=10, pady=5)
 
-        self.button_cadastrar = customtkinter.CTkButton(self.rightbar_frame, text="Cadastrar", command=self.cadastrar_pedido)
+        self.button_cadastrar = customtkinter.CTkButton(self.rightbar_frame, text="Cadastrar", command=self.registerOrder)
         self.button_cadastrar.grid(row=7, column=0, columnspan=2, padx=10, pady=10)
 
     def getClients(self):
@@ -302,7 +302,7 @@ class OrderRegistration(customtkinter.CTkFrame):
         client_list = ','.join([str(cliente[0]) for cliente in clientes]).split(',')
         return client_list
 
-    def cadastrar_pedido(self):
+    def registerOrder(self):
         cliente = self.scrollable_checkbox_frame.get_checked_item()
         data = self.entry_data.get()
         entrega = self.entry_entrega.get()
@@ -463,16 +463,16 @@ class OrderEdit(customtkinter.CTkFrame):
         self.combobox_status.grid(row=5, column=1, padx=10, pady=5)
         self.combobox_status.set(values[7])
 
-        self.button_salvar = customtkinter.CTkButton(self, text="Salvar", command=self.salvar)
+        self.button_salvar = customtkinter.CTkButton(self, text="Salvar", command=self.save)
         self.button_salvar.grid(row=6, column=0, padx=10, pady=10)
 
-        self.button_excluir = customtkinter.CTkButton(self, text="Excluir", command=self.excluir)
+        self.button_excluir = customtkinter.CTkButton(self, text="Excluir", command=self.delete)
         self.button_excluir.grid(row=6, column=1, padx=10, pady=10)
 
         self.id = values[0]
         self.cliente = values[1]
 
-    def salvar(self):
+    def save(self):
         id = self.id
         cliente = self.cliente
         data = self.entry_data.get()
@@ -490,13 +490,13 @@ class OrderEdit(customtkinter.CTkFrame):
         self.dashboard.grid(row=0, column=0, sticky="nsew")
         self.destroy()
     
-    def excluir(self):
+    def delete(self):
         id = self.id
         try:
             execute(f"DELETE FROM pedidos WHERE id = {id}")
             tkinter.messagebox.showinfo("Sucesso", "Pedido excluído com sucesso")
         except:
-            tkinter.messagebox.showerror("Erro", "Não foi possível excluir o pedido")
+            tkinter.messagebox.showerror("Erro", "Não foi possível delete o pedido")
         self.dashboard = OrderList(self.master)
         self.dashboard.grid(row=0, column=0, sticky="nsew")
         self.destroy()
@@ -535,10 +535,10 @@ class ClientRegistration(customtkinter.CTkFrame):
         self.entry_estado = customtkinter.CTkEntry(self)
         self.entry_estado.grid(row=4, column=1, padx=10, pady=10)
 
-        self.button_salvar = customtkinter.CTkButton(self, text="Salvar", command=self.salvar)
+        self.button_salvar = customtkinter.CTkButton(self, text="Salvar", command=self.registerClient)
         self.button_salvar.grid(row=5, column=0, columnspan=2, padx=10, pady=10)
 
-    def salvar(self):
+    def registerClient(self):
         nome = self.entry_nome.get()
         telefone = self.entry_telefone.get()
         endereco = self.entry_endereco.get()
@@ -551,6 +551,7 @@ class ClientRegistration(customtkinter.CTkFrame):
         except:
             tkinter.messagebox.showerror("Erro", "Não foi possível cadastrar o cliente")
         self.dashboard = ClientList(self.master)
+        self.dashboard.grid(row=0, column=0, sticky="nsew")
         self.destroy()
     
 class ClientList(customtkinter.CTkFrame):
@@ -666,13 +667,13 @@ class ClientEdit(customtkinter.CTkFrame):
         self.entry_estado.insert(0, values[5])
         self.entry_estado.grid(row=4, column=1, padx=10, pady=10)
 
-        self.button_salvar = customtkinter.CTkButton(self, text="Salvar", command=self.salvar)
+        self.button_salvar = customtkinter.CTkButton(self, text="Salvar", command=self.save)
         self.button_salvar.grid(row=5, column=0, padx=10, pady=10)
 
-        self.button_excluir = customtkinter.CTkButton(self, text="Excluir", command=self.excluir)
+        self.button_excluir = customtkinter.CTkButton(self, text="Excluir", command=self.delete)
         self.button_excluir.grid(row=5, column=1, padx=10, pady=10)
 
-    def salvar(self):
+    def save(self):
         id = self.entry_id.get()
         nome = self.entry_nome.get()
         telefone = self.entry_telefone.get()
@@ -687,7 +688,7 @@ class ClientEdit(customtkinter.CTkFrame):
         self.dashboard = ClientList(self.master)
         self.dashboard.grid(row=0, column=0, sticky="nsew")
 
-    def excluir(self):
+    def delete(self):
         id = self.entry_id.get()
         try:
             execute(f"DELETE FROM clientes WHERE id={id}")
@@ -725,40 +726,40 @@ class Aplication(customtkinter.CTk):
         self.title("Open-Order")
         self.resizable(False, False)
         customtkinter.set_appearance_mode("dark")
-        updater.updater.update()
 
+        updater.updater.update()
         CreateDataBase()
 
         if not select("SELECT * FROM usuarios"):
-            self.newuser = NewUser(self)
-            self.newuser.grid(row=0, column=0, padx=10, pady=10)
+            self.newUser = NewUser(self)
+            self.newUser.grid(row=0, column=0, padx=10, pady=10)
         else:
-            self.login = Login(self)
-            self.login.grid(row=0, column=0, padx=10, pady=10)
+            self.onLogin = Login(self)
+            self.onLogin.grid(row=0, column=0, padx=10, pady=10)
 
-    def newuser(self):
-        user = self.newuser.entry_user.get()
-        password = self.newuser.entry_password.get()
-        password2 = self.newuser.entry_password2.get()
+    def newUser(self):
+        user = self.newUser.entry_user.get()
+        password = self.newUser.entry_password.get()
+        password2 = self.newUser.entry_password2.get()
         if password == password2:
             try:
                 execute(f"INSERT INTO usuarios (usuario, senha) VALUES ('{user}', '{password}')")
-                self.newuser.destroy()
-                self.login = Login(self)
-                self.login.grid(row=0, column=0, padx=10, pady=10)
+                self.newUser.destroy()
+                self.onLogin = Login(self)
+                self.onLogin.grid(row=0, column=0, padx=10, pady=10)
             except:
                 tkinter.messagebox.showerror("Error", "Error")
         else:
             self.entry_password.delete(0, tkinter.END)
             self.entry_password2.delete(0, tkinter.END)
 
-    def login(self):
-        user = self.login.entry_user.get()
-        password = self.login.entry_password.get()
+    def onLogin(self):
+        user = self.onLogin.entry_user.get()
+        password = self.onLogin.entry_password.get()
         try:
             result = select(f"SELECT * FROM usuarios WHERE usuario='{user}' AND senha='{password}'")
             if result != []:
-                self.login.destroy()
+                self.onLogin.destroy()
                 self.menu = Menu(self)
                 self.menu.grid(row=0, column=0, padx=10, pady=10)
             else:
@@ -788,10 +789,6 @@ class Aplication(customtkinter.CTk):
 
     def contabilidade(self):
         pass
-
-    def on_close(self):
-        self.on_close = OnClose(self, border_width=2, border_color="#cecece")
-        self.on_close.grid(row=0, column=0, padx=10, pady=10)
 
 app = Aplication()
 app.mainloop()
