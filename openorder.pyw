@@ -97,6 +97,33 @@ class CreateDataBase():
     def create_table_order(self):
         execute("CREATE TABLE IF NOT EXISTS pedidos (id INTEGER PRIMARY KEY AUTOINCREMENT, cliente TEXT, data TEXT, entrega TEXT, pago FLOAT, total FLOAT, observacao TEXT, status TEXT)")
 
+class ScrollableRadiobuttonFrame(customtkinter.CTkScrollableFrame):
+    def __init__(self, master, item_list, command=None, **kwargs):
+        super().__init__(master, **kwargs)
+
+        self.command = command
+        self.radiobutton_variable = customtkinter.StringVar()
+        self.radiobutton_list = []
+        for i, item in enumerate(item_list):
+            self.add_item(item)
+
+    def add_item(self, item):
+        radiobutton = customtkinter.CTkRadioButton(self, text=item, value=item, variable=self.radiobutton_variable)
+        if self.command is not None:
+            radiobutton.configure(command=self.command)
+        radiobutton.grid(row=len(self.radiobutton_list), column=0, pady=(0, 10))
+        self.radiobutton_list.append(radiobutton)
+
+    def remove_item(self, item):
+        for radiobutton in self.radiobutton_list:
+            if item == radiobutton.cget("text"):
+                radiobutton.destroy()
+                self.radiobutton_list.remove(radiobutton)
+                return
+
+    def get_checked_item(self):
+        return self.radiobutton_variable.get()
+
 class NewUser(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -143,33 +170,6 @@ class Login(customtkinter.CTkFrame):
 
         self.button_login = customtkinter.CTkButton(self, text="Login", command=self.master.onLogin)
         self.button_login.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
-
-class ScrollableRadiobuttonFrame(customtkinter.CTkScrollableFrame):
-    def __init__(self, master, item_list, command=None, **kwargs):
-        super().__init__(master, **kwargs)
-
-        self.command = command
-        self.radiobutton_variable = customtkinter.StringVar()
-        self.radiobutton_list = []
-        for i, item in enumerate(item_list):
-            self.add_item(item)
-
-    def add_item(self, item):
-        radiobutton = customtkinter.CTkRadioButton(self, text=item, value=item, variable=self.radiobutton_variable)
-        if self.command is not None:
-            radiobutton.configure(command=self.command)
-        radiobutton.grid(row=len(self.radiobutton_list), column=0, pady=(0, 10))
-        self.radiobutton_list.append(radiobutton)
-
-    def remove_item(self, item):
-        for radiobutton in self.radiobutton_list:
-            if item == radiobutton.cget("text"):
-                radiobutton.destroy()
-                self.radiobutton_list.remove(radiobutton)
-                return
-
-    def get_checked_item(self):
-        return self.radiobutton_variable.get()
 
 class Menu(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -470,7 +470,7 @@ class OrderList(customtkinter.CTkFrame):
     def onDoubleClick(self, event):
         item = self.tv.identify('item', event.x, event.y)
         values = self.tv.item(item, "values")
-        self.editar_pedido = OrderEdit(self, values)
+        self.editar_pedido = OrderEdit(self.master, values)
         self.editar_pedido.grid(row=0, column=0, padx=10, pady=10)
 
 class OrderEdit(customtkinter.CTkFrame):
@@ -533,8 +533,10 @@ class OrderEdit(customtkinter.CTkFrame):
         cliente = self.cliente
         data = self.entry_data.get()
         entrega = self.entry_entrega.get()
-        pago = self.entry_pago.get()
-        total = self.entry_total.get()
+        pago = self.entry_pago.get().replace("R$", "").strip()
+        pago = float(pago.replace(",", "."))
+        total = self.entry_total.get().replace("R$", "").strip()
+        total = float(total.replace(",", "."))
         observacao = self.entry_observacao.get()
         status = self.combobox_status.get()
         try:
