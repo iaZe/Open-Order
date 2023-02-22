@@ -39,7 +39,7 @@ pip install -r requirements.txt
 Para usar Open-Order, siga estas etapas:
 
 ```
-python main.py
+python openorder.pyw
 ```
 
 ## 📫 Contribuindo para Open-Order
